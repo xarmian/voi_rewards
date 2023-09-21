@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function populateDateDropdown() {
     // List all your CSV file dates here
-    const availableDates = ["2023-09-20"];
+    const availableDates = ["2023-09-20","2023-09-19"];
     const dropdown = document.getElementById('datePicker');
 
     availableDates.forEach(date => {

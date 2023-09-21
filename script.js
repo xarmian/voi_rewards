@@ -29,18 +29,37 @@ function loadData() {
         const tableBody = document.getElementById('dataTable').querySelector('tbody');
         tableBody.innerHTML = ''; // clear previous data
         
+        let totalBlocks = 0;
+        let totalWallets = 0;
+ 
         rows.forEach(row => {
             const columns = row.split(',');
+            if (columns.length < 4) return;
+
             const tr = document.createElement('tr');
             
-            columns.forEach(col => {
+            columns.forEach((col, index) => {
                 const td = document.createElement('td');
+            
+                // If it's the third column, add a percent symbol
+                if (index === 2) {
+                    col += '%';
+                }
+                // If it's the second column, accumulate the total
+                if (index === 1) {
+                    totalBlocks += parseInt(col);
+                }
+
                 td.textContent = col;
                 tr.appendChild(td);
             });
 
             tableBody.appendChild(tr);
+            totalWallets++;
         });
+
+        document.getElementById('totalBlocks').textContent = `Total blocks: ${totalBlocks}`;
+        document.getElementById('totalWallets').textContent = `Total wallets: ${totalWallets}`;
     });
 }
 

@@ -29,6 +29,9 @@ function loadData() {
         .then(response => response.text())
         .then(data => {
             const rows = data.split('\n').slice(1); // skip header row
+            const dataArrays = rows.map(row => row.split(','));
+            dataArrays.sort((a, b) => Number(b[1]) - Number(a[1]));
+
             const tableBody = document.getElementById('dataTable').querySelector('tbody');
             tableBody.innerHTML = ''; // clear previous data
 
@@ -36,8 +39,7 @@ function loadData() {
             let totalWallets = 0;
             let totalVoi = 0;
 
-            rows.forEach(row => {
-                const columns = row.split(',');
+            dataArrays.forEach(columns => {
                 if (columns.length < 4) return;
 
                 const tr = document.createElement('tr');

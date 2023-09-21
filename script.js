@@ -31,6 +31,7 @@ function loadData() {
         
         let totalBlocks = 0;
         let totalWallets = 0;
+	let totalVoi = 0;
  
         rows.forEach(row => {
             const columns = row.split(',');
@@ -49,6 +50,9 @@ function loadData() {
                 if (index === 1) {
                     totalBlocks += parseInt(col);
                 }
+		if (index === 3) {
+		    totalVoi += parseFloat(col);
+		}
 
                 td.textContent = col;
                 tr.appendChild(td);
@@ -60,6 +64,7 @@ function loadData() {
 
         document.getElementById('totalBlocks').textContent = `Total blocks: ${totalBlocks}`;
         document.getElementById('totalWallets').textContent = `Total wallets: ${totalWallets}`;
+        document.getElementById('totalVoi').textContent = `Total Voi: ${Math.round(totalVoi * Math.pow(10,6)) / Math.pow(10,6)}`;
     });
 }
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theoretical Voi Rewards Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <label for="datePicker">Select a date:</label>
+    <select id="datePicker" onchange="loadData()"></select>
+    <br><br>
+    <table id="dataTable" border="1">
+        <thead>
+            <tr>
+                <th>Account ID</th>
+                <th>Number of Proposals</th>
+                <th>Percentage of Proposals</th>
+                <th>Total Rewards</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

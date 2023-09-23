@@ -7,36 +7,39 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div style="text-align:center;">
+        <label for="datePicker">Select a date:</label>
+        <select id="datePicker" onchange="loadData()"></select>
+    </div>
+    <br>
+    <div style="text-align:center;">
+        <div class="dashboard-box" id="totalBlocks">Total blocks <span>0</span></div>
+        <div class="dashboard-box" id="totalWallets">Total wallets: <span>0</span></div>
+        <div class="dashboard-box" id="totalVoi">Total rewards: <input type="number" value="0"></div>
+    </div>
+    <br/><br/>
     <div>
         This is a theortical list of potential Voi Testnet Token rewards for node operators.
 	This is the expected payout for each wallet address, based on the current block rewards 
-	proposal located <a href='https://github.com/VoiNetwork/governance/blob/proposal/BlockRewards_voifoundation_20230919/Proposal%20Submissions/Block%20Rewards/BlockRewards_voifoundation_20230919.md'>here</a>
+	proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>
     </div>
-    <br/>
+    <br>
     <div>
         Please note that rewards are not currently active. The purpose of this page is to provide information
         relevant to Node runners and Testnet Governance Council members to visualize the proposed reward structure.
     </div>
     <br/>
-    <label for="datePicker">Select a date:</label>
-    <select id="datePicker" onchange="loadData()"></select>
-    <br><br>
     <table id="dataTable" border="1">
         <thead>
             <tr>
-                <th>Wallet</th>
-                <th>Blocks Proposed</th>
-                <th>Percentage of Total Blocks</th>
-                <th>Total Theoretical Rewards</th>
+                <th id="wallet_column">Wallet</th>
+                <th>Theoretical Rewards</th>
+                <th>Total Blocks</th>
+                <th>Percentage of Blocks</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
-    <br>
-    <div id="totalBlocks">Total blocks: 0</div>
-    <div id="totalWallets">Total wallets: 0</div>
-    <div id="totalVoi">Total rewards: 0</div>
-
     <script src="script.js"></script>
 </body>
 </html>

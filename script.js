@@ -34,7 +34,7 @@ totalVoiInput.addEventListener('input', () => {
     const blocksCell = row.querySelector('td:nth-child(3)');
     const rewardsCell = row.querySelector('td:nth-child(2)');
     const blocks = parseInt(blocksCell.textContent);
-    rewardsCell.textContent = blocks / totalBlocks * newTotalVoi / Math.pow(10,6);
+    rewardsCell.textContent = Math.round(blocks / totalBlocks * newTotalVoi * Math.pow(10,6)) / Math.pow(10,6);
   });
 
   //document.querySelector('#totalBlocks span').textContent = Math.round(newTotalVoi * totalBlocks / 50);
@@ -90,8 +90,9 @@ function loadData() {
 
                 // Format third column
                 const td3 = document.createElement('td');
-                totalVoi += Number(columns[2]);
-                td3.textContent = Math.round(columns[2] / Math.pow(10, 6) * 1000000) / 1000000;
+                /*totalVoi += Number(columns[2]);
+                td3.textContent = Math.round(columns[2] / Math.pow(10, 6) * 1000000) / 1000000;*/
+                td3.textContent = '';
                 tr.appendChild(td3);
 
                 // Format fourth column
@@ -125,7 +126,7 @@ function loadData() {
             
         document.querySelector('#totalBlocks span').textContent = totalBlocks;
         document.querySelector('#totalWallets span').textContent = totalWallets;
-        document.querySelector('#totalVoi input').value = Math.round(totalVoi * Math.pow(10, 6)) / Math.pow(10, 6);
+        document.querySelector('#totalVoi input').dispatchEvent(new Event('input'));
     });
 }
 

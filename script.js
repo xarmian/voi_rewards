@@ -126,6 +126,7 @@ function loadData() {
     fetch(url,{cache: "no-store"})
         .then(response => response.json())
         .then(data => {
+            allAddresses = [];
             const dataArrays = data.data;
 
             // check if the end date selected in dropdown is more than maxTimestamp. If so, add notice below date selection that data is incomplete

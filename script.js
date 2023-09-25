@@ -85,15 +85,15 @@ function populateDateDropdown() {
       const minTimestamp = new Date(data.min_timestamp);
       const maxTimestamp = new Date(data.max_timestamp);
       const dates = [];
-      let currentDate = new Date(minTimestamp);
+      let currentDate = new Date(minTimestamp.toISOString().substring(0, 10) + 'T00:00:00Z');
       while (currentDate <= maxTimestamp) {
         const startOfWeek = new Date(currentDate);
-        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Monday
+        startOfWeek.setUTCDate(startOfWeek.getUTCDate() - startOfWeek.getUTCDay() + 1); // Monday
         const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+        endOfWeek.setUTCDate(endOfWeek.getUTCDate() + 6); // Sunday
         const dateStr = `${startOfWeek.toISOString().substring(0, 10).replace(/-/g, '')}-${endOfWeek.toISOString().substring(0, 10).replace(/-/g, '')}`;
         dates.push(dateStr);
-        currentDate.setDate(currentDate.getDate() + 7); // Next week
+        currentDate.setUTCDate(currentDate.getUTCDate() + 7); // Next week
       }
       dates.forEach(date => {
         const option = document.createElement('option');

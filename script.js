@@ -22,6 +22,9 @@ filterInput.addEventListener('input', () => {
     }
   });
 });
+filterInput.addEventListener('click', event => {
+  event.stopPropagation();
+});
 document.querySelector('#wallet_column').appendChild(filterInput);
 
 const totalVoiInput = document.querySelector('#totalVoi input');
@@ -33,40 +36,112 @@ totalVoiInput.addEventListener('input', () => {
   rows.forEach(row => {
     const blocksCell = row.querySelector('td:nth-child(3)');
     const rewardsCell = row.querySelector('td:nth-child(2)');
+    const percentCell = row.querySelector('td:nth-child(4)');
     const blocks = parseInt(blocksCell.textContent);
     rewardsCell.textContent = Math.round(blocks / totalBlocks * newTotalVoi * Math.pow(10,6)) / Math.pow(10,6);
+    // set percentCell to percentage of total blocks
+    percentCell.textContent = (blocks / totalBlocks * 100).toFixed(2) + '%';
   });
 
   //document.querySelector('#totalBlocks span').textContent = Math.round(newTotalVoi * totalBlocks / 50);
 });
 
-function populateDateDropdown() {
-    // List all your CSV file dates here
-    const availableDates = ["20230918-20230924"];
-    const dropdown = document.getElementById('datePicker');
+document.querySelectorAll('#dataTable th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const rows = Array.from(document.querySelectorAll('#dataTable tbody tr'));
+    const sortDirection = (th.classList && th.classList.contains('asc')) ? -1 : 1;
+    const sortIndex = th.cellIndex;
+    rows.sort((a, b) => {
+      const aValue = getCellValue(a, sortIndex);
+      const bValue = getCellValue(b, sortIndex);
+      if (aValue === bValue) {
+        return 0;
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return (aValue - bValue) * sortDirection;
+      } else if (typeof aValue === 'number') {
+        return -sortDirection;
+      } else if (typeof bValue === 'number') {
+        return sortDirection;
+      } else {
+        return aValue.localeCompare(bValue) * sortDirection;
+      }
+    });
+    rows.forEach(row => document.querySelector('#dataTable tbody').appendChild(row));
+    document.querySelectorAll('#dataTable th.sortable i').forEach(icon => icon.classList.remove('fa-sort-up', 'fa-sort-down'));
+    if (th.querySelector('i')) {
+      th.querySelector('i').classList.add(sortDirection === 1 ? 'fa-sort-up' : 'fa-sort-down');
+    }
+    th.classList.toggle('asc');
+    th.classList.toggle('desc');
+  });
+});
 
-    availableDates.forEach(date => {
+function populateDateDropdown() {
+  const dropdown = document.getElementById('datePicker');
+  const url = 'https://socksfirstgames.com/proposers/';
+  fetch(url, { cache: 'no-store' })
+    .then(response => response.json())
+    .then(data => {
+      const minTimestamp = new Date(data.min_timestamp);
+      const maxTimestamp = new Date(data.max_timestamp);
+      const dates = [];
+      let currentDate = new Date(minTimestamp);
+      while (currentDate <= maxTimestamp) {
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Monday
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+        const dateStr = `${startOfWeek.toISOString().substring(0, 10).replace(/-/g, '')}-${endOfWeek.toISOString().substring(0, 10).replace(/-/g, '')}`;
+        dates.push(dateStr);
+        currentDate.setDate(currentDate.getDate() + 7); // Next week
+      }
+      dates.forEach(date => {
         const option = document.createElement('option');
         option.value = date;
-        // convert `date` to human readable format
         option.textContent = date.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/, '$1-$2-$3 to $4-$5-$6');
         dropdown.appendChild(option);
+      });
+      dropdown.selectedIndex = 0;
+      loadData();
+    })
+    .catch(error => {
+      console.error(error);
     });
+}
 
-    dropdown.selectedIndex = 0;
-    loadData();
+function getCellValue(row, index) {
+    const cell = row.cells[index];
+    const text = cell.textContent.trim();
+    return isNaN(text) ? text : parseFloat(text);
 }
 
 function loadData() {
     const date = document.getElementById('datePicker').value;
-    const url = `${date}.csv`;
 
-    fetch(url)
-        .then(response => response.text())
+    // derive start and end dates from the selected date of format YYYYMMDD-YYYYMMDD
+    const startDate = date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8);
+    const endDate = date.substring(9, 13) + '-' + date.substring(13, 15) + '-' + date.substring(15, 17);
+    const url = `https://socksfirstgames.com/proposers/?start=${startDate}&end=${endDate}`;
+
+    fetch(url,{cache: "no-store"})
+        .then(response => response.json())
         .then(data => {
-            const rows = data.split('\n').slice(1); // skip header row
-            const dataArrays = rows.map(row => row.split(','));
-            dataArrays.sort((a, b) => Number(b[3]) - Number(a[3]));
+            const dataArrays = data.data;
+
+            // check if the end date selected in dropdown is more than maxTimestamp. If so, add notice below date selection that data is incomplete
+            const selectedDate = new Date(Date.UTC(date.substring(9, 13), date.substring(13, 15) - 1, date.substring(15, 17)));
+            const endOfDay = new Date(selectedDate);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            console.log(endOfDay);
+            if (endOfDay > new Date(data.max_timestamp)) {
+                document.getElementById('data_notice').style.display = 'block';
+            }
+            else {
+                document.getElementById('data_notice').style.display = 'none';
+            }
+    
+            // Sort the data by block count
+            dataArrays.sort((a, b) => b.block_count - a.block_count);
 
             const tableBody = document.getElementById('dataTable').querySelector('tbody');
             tableBody.innerHTML = ''; // clear previous data
@@ -75,36 +150,30 @@ function loadData() {
             let totalWallets = 0;
             let totalVoi = 0;
 
-            dataArrays.forEach(columns => {
-                if (columns.length < 4) return;
-
+            dataArrays.forEach(row => {
                 const tr = document.createElement('tr');
 
                 // Format first column
                 const td1 = document.createElement('td');
-                allAddresses.push(columns[0]);
-                td1.textContent = columns[0];
+                td1.textContent = row.proposer;
+                allAddresses.push(row.proposer);
                 tr.appendChild(td1);
 
-                // Skip second column
+                // Format second column
+                const td2 = document.createElement('td');
+                td2.textContent = ''; // No data available
+                tr.appendChild(td2);
 
                 // Format third column
                 const td3 = document.createElement('td');
-                /*totalVoi += Number(columns[2]);
-                td3.textContent = Math.round(columns[2] / Math.pow(10, 6) * 1000000) / 1000000;*/
-                td3.textContent = '';
+                totalBlocks += row.block_count;
+                td3.textContent = row.block_count;
                 tr.appendChild(td3);
 
                 // Format fourth column
                 const td4 = document.createElement('td');
-                totalBlocks += parseInt(columns[3]);
-                td4.textContent = columns[3];
+                td4.textContent = '';
                 tr.appendChild(td4);
-
-                // Format fifth column
-                const td5 = document.createElement('td');
-                td5.textContent = Math.round(columns[4] * 1000) / 10 + '%';
-                tr.appendChild(td5);
 
                 tableBody.appendChild(tr);
                 totalWallets++;
@@ -122,12 +191,14 @@ function loadData() {
                     }
                 });
             });
-            
-            
-        document.querySelector('#totalBlocks span').textContent = totalBlocks;
-        document.querySelector('#totalWallets span').textContent = totalWallets;
-        document.querySelector('#totalVoi input').dispatchEvent(new Event('input'));
-    });
+
+            // Update the total blocks and wallets counts
+            document.querySelector('#totalBlocks span').textContent = totalBlocks;
+            document.querySelector('#totalWallets span').textContent = totalWallets;
+            document.querySelector('#lastBlock span').innerHTML = `${data.block_height}<br/><span class='little'>${new Date(data.max_timestamp).toLocaleString('en-US', { timeZone: 'UTC' })} UTC</span>`;
+            // Trigger the total VOI input change event
+            document.querySelector('#totalVoi input').dispatchEvent(new Event('input'));
+        });
 }
 
 async function getNFD(data) {

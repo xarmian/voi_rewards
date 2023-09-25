@@ -26,6 +26,7 @@ th, td {
 th {
     background-color: #007BFF;
     color: white;
+    cursor: pointer;
 }
 
 tr:nth-child(even) {
@@ -33,9 +34,8 @@ tr:nth-child(even) {
 }
 
 .dashboard-box {
-    display: inline-block;
     width: 200px;
-    height: 100px;
+    height: 110px;
     background-color: #f2f2f2;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -50,4 +50,12 @@ tr:nth-child(even) {
 }
 #wallet_filter {
     margin-left:20px;
+}
+.little {
+    font-size:smaller !important;
+}
+#data_notice {
+    display:none;
+    color:darkred;
+    text-align: center;
 }

@@ -116,6 +116,9 @@ function getCellValue(row, index) {
 }
 
 function loadData() {
+  const overlay = document.querySelector('.overlay');
+  overlay.style.display = 'flex';
+  
     const date = document.getElementById('datePicker').value;
 
     // derive start and end dates from the selected date of format YYYYMMDD-YYYYMMDD
@@ -191,6 +194,11 @@ function loadData() {
                         firstCell.textContent = correspondingNFD.replacementValue;
                     }
                 });
+
+                // trigger filterInput event to update the filter
+                filterInput.dispatchEvent(new Event('input'));
+
+                overlay.style.display = 'none';
             });
 
             // Update the total blocks and wallets counts

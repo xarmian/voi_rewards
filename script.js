@@ -37,24 +37,34 @@ const calcRewards = () => {
   const rows = document.querySelectorAll('#dataTable tbody tr');
 
   rows.forEach(row => {
-    const blocksCell = row.querySelector('td:nth-child(4)');
-    const rewardsCell = row.querySelector('td:nth-child(2)');
-    const healthCell = row.querySelector('td:nth-child(3)');
-    const percentCell = row.querySelector('td:nth-child(4)');
+    const blocksCell = row.querySelector('td:nth-child(2)');
+    const rewardsCell = row.querySelector('td:nth-child(3)');
+    const healthCell = row.querySelector('td:nth-child(4)');
+    const totalCell = row.querySelector('td:nth-child(5)');
+
     const blocks = parseInt(blocksCell.textContent);
     rewardsCell.textContent = Math.round(blocks / totalBlocks * newTotalVoi * Math.pow(10,6)) / Math.pow(10,6);
     // set percentCell to percentage of total blocks
     blocksCell.textContent += ' ('+(blocks / totalBlocks * 100).toFixed(2) + '%)';
 
     // calculate health rewards
-    const healthScore = parseFloat(row.querySelector('td:nth-child(3)').getAttribute('health_score'));
-    const healthDivisor = parseFloat(row.querySelector('td:nth-child(3)').getAttribute('health_divisor'));
+    const healthScore = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_score'));
+    const healthDivisor = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_divisor'));
     
     // calculate health reward as VOI_HEALTH_REWARDS / TOTAL_HEALTHY_NODES / HEALTH_DIVISOR
-    const healthReward = Math.round(VOI_HEALTH_REWARDS / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6);
+    const healthReward = (healthScore >= 5) ? Math.round(VOI_HEALTH_REWARDS / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
     healthCell.textContent = isNaN(healthReward) ? '0' : healthReward.toFixed(6);
 
+    const totalRewards = Math.round((blocks / totalBlocks * newTotalVoi + healthReward) * Math.pow(10,6)) / Math.pow(10,6);
+    totalCell.textContent = totalRewards;
+
   });
+
+    // console log the sum of column 3
+    console.log('sum of column 3: '+Array.from(document.querySelectorAll('#dataTable tbody tr td:nth-child(3)')).reduce((a,b)=>a+parseFloat(b.textContent),0));
+    // console log the sum of column 4
+    console.log('sum of column 4: '+Array.from(document.querySelectorAll('#dataTable tbody tr td:nth-child(4)')).reduce((a,b)=>a+parseFloat(b.textContent),0));
+
 }
 
 document.querySelectorAll('#dataTable th.sortable').forEach(th => {
@@ -163,7 +173,6 @@ function loadData() {
 
             let totalBlocks = 0;
             let totalWallets = 0;
-            let totalVoi = 0;
 
             dataArrays.forEach(row => {
                 const tr = document.createElement('tr');
@@ -178,22 +187,27 @@ function loadData() {
 
                 // Format second column
                 const td2 = document.createElement('td');
-                td2.textContent = ''; // No data available
+                totalBlocks += row.block_count;
+                td2.textContent = row.block_count;
                 tr.appendChild(td2);
 
                 // Format third column
                 const td3 = document.createElement('td');
-                td3.textContent = '';
-                td3.setAttribute('health_score', row.node.health_score);
-                td3.setAttribute('health_divisor', row.node.health_divisor);
-                td3.setAttribute('title', `Health score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
+                td3.textContent = ''; // No data available
                 tr.appendChild(td3);
 
                 // Format fourth column
                 const td4 = document.createElement('td');
-                totalBlocks += row.block_count;
-                td4.textContent = row.block_count;
+                td4.textContent = '';
+                td4.setAttribute('health_score', row.node.health_score);
+                td4.setAttribute('health_divisor', row.node.health_divisor);
+                td4.setAttribute('title', `Health score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
                 tr.appendChild(td4);
+
+                // Format fifth column
+                const td5 = document.createElement('td');
+                td5.textContent = ''; // No data available
+                tr.appendChild(td5);
 
                 tableBody.appendChild(tr);
                 totalWallets++;
@@ -263,14 +277,16 @@ function downloadCSV(type = 'all', event) {
     const address = cells[0].getAttribute('addr');
     let tokenAmount;
     if (type === 'block') {
-      tokenAmount = Number(cells[1].textContent);
-    } else if (type === 'health') {
       tokenAmount = Number(cells[2].textContent);
+    } else if (type === 'health') {
+      tokenAmount = Number(cells[3].textContent);
     } else {
-      tokenAmount = Number(cells[1].textContent) + Number(cells[2].textContent);
+      tokenAmount = Number(cells[2].textContent) + Number(cells[3].textContent);
     }
+    tokenAmount = tokenAmount * Math.pow(10,6);
+
     return [address, 'node', tokenAmount];
-  });
+  }).filter(row => row[2] > 0);
 
   // Create the CSV content
   const headers = ['account', 'userType', 'tokenAmount'];

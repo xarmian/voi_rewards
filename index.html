@@ -38,9 +38,6 @@
         <button onclick="loadData()" class="refresh-button" title="Refresh">
             <i class="fas fa-sync-alt"></i>
         </button>
-        <button onclick="downloadCSV()" class="download-button" title="Download CSV">
-            <i class="fas fa-download"></i>
-        </button>            
     </div>
     <div id="data_notice">NOTICE: Data is incomplete for the selected date range.</div>
     <br>
@@ -71,6 +68,7 @@
         <thead>
             <tr>
                 <th id="wallet_column" class="sortable">Wallet<i class="fa"></i></th>
+                <th class="sortable">Total Blocks<i class="fa"></i></th>
                 <th class="sortable">Block Rewards<i class="fa fa-sort-down"></i>
                     <button onclick="downloadCSV('block',event)" class="download-button" title="Download CSV with Block rewards only">
                         <i class="fas fa-download"></i>
@@ -81,12 +79,16 @@
                         <i class="fas fa-download"></i>
                     </button>            
                 </th>
-                <th class="sortable">Total Blocks<i class="fa"></i></th>
+                <th class="sortable">Total Rewards<i class="fa"></i>
+                    <button onclick="downloadCSV('all',event)" class="download-button" title="Download CSV of Total Rewards">
+                        <i class="fas fa-download"></i>
+                    </button>            
+                </th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
-    <script src="script.js?4"></script>
+    <script src="script.js?5"></script>
   </body>
 </html>
 

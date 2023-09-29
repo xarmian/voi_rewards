@@ -1,3 +1,6 @@
+const VOI_BLOCK_REWARDS = 12500000;
+const VOI_HEALTH_REWARDS = 10000000;
+
 let aggregatedNFDs = [];
 let allAddresses = [];
 
@@ -27,24 +30,32 @@ filterInput.addEventListener('click', event => {
 });
 document.querySelector('#wallet_column').appendChild(filterInput);
 
-const totalVoiInput = document.querySelector('#totalVoi input');
-totalVoiInput.addEventListener('input', () => {
-  const newTotalVoi = Number(totalVoiInput.value);
+const calcRewards = () => {
+  const newTotalVoi = Number(VOI_BLOCK_REWARDS);
   const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(',', ''));
+  const totalHealthyNodes = Number(document.querySelector('#totalHealthyNodes span').textContent.replace(',', ''));
   const rows = document.querySelectorAll('#dataTable tbody tr');
 
   rows.forEach(row => {
-    const blocksCell = row.querySelector('td:nth-child(3)');
+    const blocksCell = row.querySelector('td:nth-child(4)');
     const rewardsCell = row.querySelector('td:nth-child(2)');
+    const healthCell = row.querySelector('td:nth-child(3)');
     const percentCell = row.querySelector('td:nth-child(4)');
     const blocks = parseInt(blocksCell.textContent);
     rewardsCell.textContent = Math.round(blocks / totalBlocks * newTotalVoi * Math.pow(10,6)) / Math.pow(10,6);
     // set percentCell to percentage of total blocks
-    percentCell.textContent = (blocks / totalBlocks * 100).toFixed(2) + '%';
-  });
+    blocksCell.textContent += ' ('+(blocks / totalBlocks * 100).toFixed(2) + '%)';
 
-  //document.querySelector('#totalBlocks span').textContent = Math.round(newTotalVoi * totalBlocks / 50);
-});
+    // calculate health rewards
+    const healthScore = parseFloat(row.querySelector('td:nth-child(3)').getAttribute('health_score'));
+    const healthDivisor = parseFloat(row.querySelector('td:nth-child(3)').getAttribute('health_divisor'));
+    
+    // calculate health reward as VOI_HEALTH_REWARDS / TOTAL_HEALTHY_NODES / HEALTH_DIVISOR
+    const healthReward = Math.round(VOI_HEALTH_REWARDS / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6);
+    healthCell.textContent = isNaN(healthReward) ? '0' : healthReward.toFixed(6);
+
+  });
+}
 
 document.querySelectorAll('#dataTable th.sortable').forEach(th => {
   th.addEventListener('click', () => {
@@ -95,7 +106,7 @@ function populateDateDropdown() {
         dates.push(dateStr);
         currentDate.setUTCDate(currentDate.getUTCDate() + 7); // Next week
       }
-      dates.forEach(date => {
+      dates.reverse().forEach(date => {
         const option = document.createElement('option');
         option.value = date;
         option.textContent = date.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/, '$1-$2-$3 to $4-$5-$6');
@@ -160,6 +171,8 @@ function loadData() {
                 // Format first column
                 const td1 = document.createElement('td');
                 td1.textContent = row.proposer;
+                td1.setAttribute('addr', row.proposer);
+                td1.setAttribute('title', row.proposer);
                 allAddresses.push(row.proposer);
                 tr.appendChild(td1);
 
@@ -170,17 +183,39 @@ function loadData() {
 
                 // Format third column
                 const td3 = document.createElement('td');
-                totalBlocks += row.block_count;
-                td3.textContent = row.block_count;
+                td3.textContent = '';
+                td3.setAttribute('health_score', row.node.health_score);
+                td3.setAttribute('health_divisor', row.node.health_divisor);
+                td3.setAttribute('title', `Health score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
                 tr.appendChild(td3);
 
                 // Format fourth column
                 const td4 = document.createElement('td');
-                td4.textContent = '';
+                totalBlocks += row.block_count;
+                td4.textContent = row.block_count;
                 tr.appendChild(td4);
 
                 tableBody.appendChild(tr);
                 totalWallets++;
+            });
+
+            // attach click event to column 1 of table to swap between title and textContent
+            document.querySelectorAll('#dataTable tbody td:first-child').forEach(td => {
+              let isDragging = false;
+              td.addEventListener('mousedown', () => {
+                isDragging = false;
+              });
+              td.addEventListener('mousemove', () => {
+                isDragging = true;
+              });
+              td.addEventListener('mouseup', () => {
+                if (!isDragging) {
+                  const text = td.textContent;
+                  const title = td.getAttribute('title');
+                  td.textContent = title;
+                  td.setAttribute('title', text);
+                }
+              });
             });
 
             aggregatedNFDs = [];
@@ -204,10 +239,54 @@ function loadData() {
             // Update the total blocks and wallets counts
             document.querySelector('#totalBlocks span').textContent = totalBlocks;
             document.querySelector('#totalWallets span').textContent = totalWallets;
+            document.querySelector('#totalHealthyNodes span').textContent = data.healthy_node_count;
             document.querySelector('#lastBlock span').innerHTML = `${data.block_height}<br/><span class='little'>${new Date(data.max_timestamp).toLocaleString('en-US', { timeZone: 'UTC' })} UTC</span>`;
-            // Trigger the total VOI input change event
-            document.querySelector('#totalVoi input').dispatchEvent(new Event('input'));
+            
+            // populate blockVoiPoolTotal and healthVoiPoolTotal divs
+            document.querySelector('#blockVoiPoolTotal').textContent = VOI_BLOCK_REWARDS.toLocaleString()+'/wk';
+            document.querySelector('#healthVoiPoolTotal').textContent = VOI_HEALTH_REWARDS.toLocaleString()+'/wk';
+
+            calcRewards();
         });
+}
+
+// Function to download the CSV
+// type can be 'all', 'block', or 'health'
+function downloadCSV(type = 'all', event) {
+  if (typeof event !== 'undefined') event.stopPropagation(); // Stop event propagation
+
+  // Get the table data
+  const table = document.getElementById('dataTable');
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  const data = rows.map(row => {
+    const cells = Array.from(row.querySelectorAll('td'));
+    const address = cells[0].getAttribute('addr');
+    let tokenAmount;
+    if (type === 'block') {
+      tokenAmount = Number(cells[1].textContent);
+    } else if (type === 'health') {
+      tokenAmount = Number(cells[2].textContent);
+    } else {
+      tokenAmount = Number(cells[1].textContent) + Number(cells[2].textContent);
+    }
+    return [address, 'node', tokenAmount];
+  });
+
+  // Create the CSV content
+  const headers = ['account', 'userType', 'tokenAmount'];
+  const csvContent = headers.join(',') + '\n' + data.map(row => row.join(',')).join('\n');
+
+  // Download the CSV file
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  const filename = type === 'block' ? 'block_rewards.csv' : type === 'health' ? 'health_rewards.csv' : 'all_rewards.csv';
+  link.setAttribute('download', filename);
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 async function getNFD(data) {

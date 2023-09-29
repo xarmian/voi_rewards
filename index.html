@@ -25,7 +25,7 @@
           font-size: 24px;
         }
       </style>
-      <link rel="stylesheet" href="styles.css">
+      <link rel="stylesheet" href="styles.css?1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -35,9 +35,12 @@
     <div style="text-align:center;">
         <label for="datePicker">Select date range:</label>
         <select id="datePicker" onchange="loadData()"></select>
-        <button onclick="loadData()" class="refresh-button">
+        <button onclick="loadData()" class="refresh-button" title="Refresh">
             <i class="fas fa-sync-alt"></i>
         </button>
+        <button onclick="downloadCSV()" class="download-button" title="Download CSV">
+            <i class="fas fa-download"></i>
+        </button>            
     </div>
     <div id="data_notice">NOTICE: Data is incomplete for the selected date range.</div>
     <br>
@@ -45,7 +48,12 @@
         <div class="dashboard-box" id="totalBlocks">Total blocks <span>Loading...</span></div>
         <div class="dashboard-box" id="lastBlock">Last Block: <span>Loading...</span></div>
         <div class="dashboard-box" id="totalWallets">Total Wallets: <span>Loading...</span></div>
-        <div class="dashboard-box" id="totalVoi">Reward Pool: <input type="number" value="12500000"></div>
+        <div class="dashboard-box" id="totalHealthyNodes">Total Healthy Nodes: <span>Loading...</span></div>
+        <div class="dashboard-box">
+            <div id="blockVoiPool">Block Reward Pool: <div id='blockVoiPoolTotal'>Loading...</div></div>
+            <br/>
+            <div id="healthVoiPool">Health Reward Pool: <div id='healthVoiPoolTotal'>Loading...</div></div>
+        </div>
     </div>
     <br/><br/>
     <div>
@@ -63,14 +71,22 @@
         <thead>
             <tr>
                 <th id="wallet_column" class="sortable">Wallet<i class="fa"></i></th>
-                <th class="sortable">Theoretical Rewards<i class="fa fa-sort-down"></i></th>
+                <th class="sortable">Block Rewards<i class="fa fa-sort-down"></i>
+                    <button onclick="downloadCSV('block',event)" class="download-button" title="Download CSV with Block rewards only">
+                        <i class="fas fa-download"></i>
+                    </button>            
+                </th>
+                <th class="sortable">Health Rewards<i class="fa"></i>
+                    <button onclick="downloadCSV('health',event)" class="download-button" title="Download CSV Health rewards only">
+                        <i class="fas fa-download"></i>
+                    </button>            
+                </th>
                 <th class="sortable">Total Blocks<i class="fa"></i></th>
-                <th>Percentage of Blocks</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
-    <script src="script.js?3"></script>
+    <script src="script.js?4"></script>
   </body>
 </html>
 

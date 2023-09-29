@@ -43,7 +43,7 @@ tr:nth-child(even) {
     margin-right: 20px;
     text-align: center;
 }
-.dashboard-box span, .dashboard-box input {
+.dashboard-box > span, .dashboard-box > input {
     display:block;
     margin-top:20px;
     font-size:larger;

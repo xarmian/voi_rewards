@@ -33,7 +33,10 @@ document.querySelector('#wallet_column').appendChild(filterInput);
 const calcRewards = () => {
   const newTotalVoi = Number(VOI_BLOCK_REWARDS);
   const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(',', ''));
-  const totalHealthyNodes = Number(document.querySelector('#totalHealthyNodes span').textContent.replace(',', ''));
+ 
+  const hn = document.querySelector('#totalHealthyNodes span');
+  const totalHealthyNodes = Number(hn.textContent.replace(',', '')) - Number(hn.getAttribute('empty_nodes'));
+ 
   const rows = document.querySelectorAll('#dataTable tbody tr');
 
   rows.forEach(row => {
@@ -145,7 +148,7 @@ function loadData() {
     // derive start and end dates from the selected date of format YYYYMMDD-YYYYMMDD
     const startDate = date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8);
     const endDate = date.substring(9, 13) + '-' + date.substring(13, 15) + '-' + date.substring(15, 17);
-    const url = `https://socksfirstgames.com/proposers/?start=${startDate}&end=${endDate}`;
+    const url = `https://socksfirstgames.com/proposers/index.php?start=${startDate}&end=${endDate}`;
 
     fetch(url,{cache: "no-store"})
         .then(response => response.json())
@@ -253,7 +256,11 @@ function loadData() {
             // Update the total blocks and wallets counts
             document.querySelector('#totalBlocks span').textContent = totalBlocks;
             document.querySelector('#totalWallets span').textContent = totalWallets;
-            document.querySelector('#totalHealthyNodes span').textContent = data.healthy_node_count;
+
+            const hn = document.querySelector('#totalHealthyNodes span');
+            hn.textContent = data.healthy_node_count;
+            hn.setAttribute('empty_nodes', data.empty_node_count);
+
             document.querySelector('#lastBlock span').innerHTML = `${data.block_height}<br/><span class='little'>${new Date(data.max_timestamp).toLocaleString('en-US', { timeZone: 'UTC' })} UTC</span>`;
             
             // populate blockVoiPoolTotal and healthVoiPoolTotal divs
@@ -334,7 +341,7 @@ async function getNFD(data) {
                     aggregatedNFDs.push({ key, replacementValue });
                 });
             })
-            .catch(error => console.error("Error fetching additional data:", error));
+            .catch(error => {}); // suppress error //console.error("Error fetching additional data:", error));
     });
 
     await Promise.all(allFetches);

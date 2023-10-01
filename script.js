@@ -294,15 +294,15 @@ function downloadCSV(type = 'all', event) {
     let note;
     if (type === 'block') {
       tokenAmount = Number(cells[2].textContent);
-      note = '"' + cells[2].textContent.replace(/"/g, '""') + '"';
+      note = JSON.stringify({blockRewards: tokenAmount});
     } else if (type === 'health') {
       tokenAmount = Number(cells[3].textContent);
-      note = '"' + cells[3].textContent.replace(/"/g, '""') + '"';
+      note = JSON.stringify({healthRewards: tokenAmount});
     } else {
       tokenAmount = Number(cells[2].textContent) + Number(cells[3].textContent);
       note = JSON.stringify({blockRewards: cells[2].textContent, healthRewards: cells[3].textContent});
-      note = '"' + note.replace(/"/g, '""') + '"';
     }
+    note = '"' + note.replace(/"/g, '""') + '"';
     tokenAmount = Math.round(tokenAmount * Math.pow(10,6));
 
     return [address, 'node', tokenAmount, note];

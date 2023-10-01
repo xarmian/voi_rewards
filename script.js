@@ -31,9 +31,10 @@ filterInput.addEventListener('click', event => {
 document.querySelector('#wallet_column').appendChild(filterInput);
 
 const calcRewards = () => {
-  const newTotalVoi = Number(VOI_BLOCK_REWARDS);
-  const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(',', ''));
- 
+  const block_rewards = Number(document.querySelector('#blockVoiPoolTotal').value.replace(/,/g, ''));
+  const health_rewards = Number(document.querySelector('#healthVoiPoolTotal').value.replace(/,/g, ''));
+  const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(/,/g, '')); 
+
   const hn = document.querySelector('#totalHealthyNodes span');
   const totalHealthyNodes = Number(hn.textContent.replace(',', '')) - Number(hn.getAttribute('empty_nodes'));
  
@@ -46,22 +47,29 @@ const calcRewards = () => {
     const totalCell = row.querySelector('td:nth-child(5)');
 
     const blocks = parseInt(blocksCell.textContent);
-    rewardsCell.textContent = Math.round(blocks / totalBlocks * newTotalVoi * Math.pow(10,6)) / Math.pow(10,6);
+    rewardsCell.textContent = Math.round(blocks / totalBlocks * block_rewards * Math.pow(10,6)) / Math.pow(10,6);
     // set percentCell to percentage of total blocks
-    blocksCell.textContent += ' ('+(blocks / totalBlocks * 100).toFixed(2) + '%)';
+    blocksCell.textContent = `${blocks} (${(blocks / totalBlocks * 100).toFixed(2)}%)`;
 
     // calculate health rewards
     const healthScore = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_score'));
     const healthDivisor = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_divisor'));
     
     // calculate health reward as VOI_HEALTH_REWARDS / TOTAL_HEALTHY_NODES / HEALTH_DIVISOR
-    const healthReward = (healthScore >= 5) ? Math.round(VOI_HEALTH_REWARDS / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
+    const healthReward = (healthScore >= 5) ? Math.round(health_rewards / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
     healthCell.textContent = isNaN(healthReward) ? '0' : healthReward.toFixed(6);
 
-    const totalRewards = Math.round((blocks / totalBlocks * newTotalVoi + healthReward) * Math.pow(10,6)) / Math.pow(10,6);
+    const totalRewards = Math.round((blocks / totalBlocks * block_rewards + healthReward) * Math.pow(10,6)) / Math.pow(10,6);
     totalCell.textContent = totalRewards;
 
   });
+
+  // Add event listeners to blockVoiPoolTotal and healthVoiPoolTotal input fields
+const blockVoiPoolTotal = document.querySelector('#blockVoiPoolTotal');
+blockVoiPoolTotal.addEventListener('input', calcRewards);
+
+const healthVoiPoolTotal = document.querySelector('#healthVoiPoolTotal');
+healthVoiPoolTotal.addEventListener('input', calcRewards);
 
     // console log the sum of column 3
     console.log('sum of column 3: '+Array.from(document.querySelectorAll('#dataTable tbody tr td:nth-child(3)')).reduce((a,b)=>a+parseFloat(b.textContent),0));
@@ -264,8 +272,8 @@ function loadData() {
             document.querySelector('#lastBlock span').innerHTML = `${data.block_height}<br/><span class='little'>${new Date(data.max_timestamp).toLocaleString('en-US', { timeZone: 'UTC' })} UTC</span>`;
             
             // populate blockVoiPoolTotal and healthVoiPoolTotal divs
-            document.querySelector('#blockVoiPoolTotal').textContent = VOI_BLOCK_REWARDS.toLocaleString()+'/wk';
-            document.querySelector('#healthVoiPoolTotal').textContent = VOI_HEALTH_REWARDS.toLocaleString()+'/wk';
+            document.querySelector('#blockVoiPoolTotal').value = VOI_BLOCK_REWARDS.toLocaleString();
+            document.querySelector('#healthVoiPoolTotal').value = VOI_HEALTH_REWARDS.toLocaleString();
 
             calcRewards();
         });
@@ -283,20 +291,25 @@ function downloadCSV(type = 'all', event) {
     const cells = Array.from(row.querySelectorAll('td'));
     const address = cells[0].getAttribute('addr');
     let tokenAmount;
+    let note;
     if (type === 'block') {
       tokenAmount = Number(cells[2].textContent);
+      note = '"' + cells[2].textContent.replace(/"/g, '""') + '"';
     } else if (type === 'health') {
       tokenAmount = Number(cells[3].textContent);
+      note = '"' + cells[3].textContent.replace(/"/g, '""') + '"';
     } else {
       tokenAmount = Number(cells[2].textContent) + Number(cells[3].textContent);
+      note = JSON.stringify({blockRewards: cells[2].textContent, healthRewards: cells[3].textContent});
+      note = '"' + note.replace(/"/g, '""') + '"';
     }
-    tokenAmount = tokenAmount * Math.pow(10,6);
+    tokenAmount = Math.round(tokenAmount * Math.pow(10,6));
 
-    return [address, 'node', tokenAmount];
+    return [address, 'node', tokenAmount, note];
   }).filter(row => row[2] > 0);
 
   // Create the CSV content
-  const headers = ['account', 'userType', 'tokenAmount'];
+  const headers = ['account', 'userType', 'tokenAmount', 'note'];
   const csvContent = headers.join(',') + '\n' + data.map(row => row.join(',')).join('\n');
 
   // Download the CSV file

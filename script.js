@@ -59,6 +59,13 @@ const calcRewards = () => {
     const healthReward = (healthScore >= 5) ? Math.round(health_rewards / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
     healthCell.textContent = isNaN(healthReward) ? '0' : healthReward.toFixed(6);
 
+    if (healthCell.getAttribute('node_name') == 'null') {
+      healthCell.innerHTML += '<br/><span class="little">No telemetry data</span>';
+    }
+    else {
+      healthCell.innerHTML += `<br/><span class="little">${healthCell.getAttribute('node_name').substring(0,14)} - ${healthCell.getAttribute('health_score')}</span>`;
+    }
+
     const totalRewards = Math.round((blocks / totalBlocks * block_rewards + healthReward) * Math.pow(10,6)) / Math.pow(10,6);
     totalCell.textContent = totalRewards;
 
@@ -210,9 +217,10 @@ function loadData() {
                 // Format fourth column
                 const td4 = document.createElement('td');
                 td4.textContent = '';
+                td4.setAttribute('node_name', row.node.node_name);
                 td4.setAttribute('health_score', row.node.health_score);
                 td4.setAttribute('health_divisor', row.node.health_divisor);
-                td4.setAttribute('title', `Health score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
+                td4.setAttribute('title', `Node Name: ${row.node.node_name}\nHealth score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
                 tr.appendChild(td4);
 
                 // Format fifth column

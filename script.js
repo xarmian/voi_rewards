@@ -57,13 +57,13 @@ const calcRewards = () => {
     
     // calculate health reward as VOI_HEALTH_REWARDS / TOTAL_HEALTHY_NODES / HEALTH_DIVISOR
     const healthReward = (healthScore >= 5) ? Math.round(health_rewards / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
-    healthCell.textContent = isNaN(healthReward) ? '0' : healthReward.toFixed(6);
+    healthCell.innerHTML = isNaN(healthReward) ? '<div>0</div>' : `<div>${healthReward.toFixed(6)}</div>`;
 
     if (healthCell.getAttribute('node_name') == 'null') {
-      healthCell.innerHTML += '<br/><span class="little">No telemetry data</span>';
+      healthCell.innerHTML += '<div class="little">No telemetry data</div>';
     }
     else {
-      healthCell.innerHTML += `<br/><span class="little">${healthCell.getAttribute('node_name').substring(0,14)} - ${healthCell.getAttribute('health_score')}</span>`;
+      healthCell.innerHTML += `<div class="little">${healthCell.getAttribute('node_name').substring(0,14)} - ${healthCell.getAttribute('health_score')}</div>`;
     }
 
     const totalRewards = Math.round((blocks / totalBlocks * block_rewards + healthReward) * Math.pow(10,6)) / Math.pow(10,6);
@@ -304,11 +304,11 @@ function downloadCSV(type = 'all', event) {
       tokenAmount = Number(cells[2].textContent);
       note = JSON.stringify({blockRewards: tokenAmount});
     } else if (type === 'health') {
-      tokenAmount = Number(cells[3].textContent);
+      tokenAmount = Number(cells[3].querySelector('div:first-child').textContent);
       note = JSON.stringify({healthRewards: tokenAmount});
     } else {
-      tokenAmount = Number(cells[2].textContent) + Number(cells[3].textContent);
-      note = JSON.stringify({blockRewards: cells[2].textContent, healthRewards: cells[3].textContent});
+      tokenAmount = Number(cells[2].textContent) + Number(cells[3].querySelector('div:first-child').textContent);
+      note = JSON.stringify({blockRewards: Number(cells[2].textContent), healthRewards: Number(cells[3].querySelector('div:first-child').textContent)});
     }
     note = '"' + note.replace(/"/g, '""') + '"';
     tokenAmount = Math.round(tokenAmount * Math.pow(10,6));

@@ -220,6 +220,7 @@ function loadData() {
                 td4.textContent = '';
                 td4.setAttribute('node_name', row.node.node_name);
                 td4.setAttribute('health_score', row.node.health_score);
+                td4.setAttribute('health_hours', row.node.health_hours);
                 td4.setAttribute('health_divisor', row.node.health_divisor);
                 td4.setAttribute('title', `Node Name: ${row.node.node_name}\nHealth score: ${row.node.health_score}\nHealth divisor: ${row.node.health_divisor}`);
                 tr.appendChild(td4);

@@ -53,10 +53,11 @@ const calcRewards = () => {
 
     // calculate health rewards
     const healthScore = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_score'));
+    const healthHours = parseInt(row.querySelector('td:nth-child(4)').getAttribute('health_hours'));
     const healthDivisor = parseFloat(row.querySelector('td:nth-child(4)').getAttribute('health_divisor'));
     
     // calculate health reward as VOI_HEALTH_REWARDS / TOTAL_HEALTHY_NODES / HEALTH_DIVISOR
-    const healthReward = (healthScore >= 5) ? Math.round(health_rewards / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
+    const healthReward = (healthScore >= 5 && healthHours >= 168) ? Math.round(health_rewards / totalHealthyNodes / healthDivisor * Math.pow(10,6)) / Math.pow(10,6) : 0;
     healthCell.innerHTML = isNaN(healthReward) ? '<div>0</div>' : `<div>${healthReward.toFixed(6)}</div>`;
 
     if (healthCell.getAttribute('node_name') == 'null') {
@@ -274,7 +275,7 @@ function loadData() {
             document.querySelector('#totalWallets span').textContent = totalWallets;
 
             const hn = document.querySelector('#totalHealthyNodes span');
-            hn.textContent = data.healthy_node_count;
+            hn.textContent = data.qualify_node_count;
             hn.setAttribute('empty_nodes', data.empty_node_count);
 
             document.querySelector('#lastBlock span').innerHTML = `${data.block_height}<br/><span class='little'>${new Date(data.max_timestamp).toLocaleString('en-US', { timeZone: 'UTC' })} UTC</span>`;

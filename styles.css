@@ -3,7 +3,6 @@ body {
     padding: 2rem;
     background-color: #f4f4f4;
 }
-
 label, select, table {
     margin-bottom: 1rem;
 }
@@ -14,7 +13,7 @@ label, select, table {
 }
 
 table {
-    width: 100%;
+    width: 100vw;
     border-collapse: collapse;
 }
 
@@ -33,6 +32,12 @@ tr:nth-child(even) {
     background-color: #e9e9e9;
 }
 
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .dashboard-box {
     width: 200px;
     height: 110px;
@@ -40,13 +45,17 @@ tr:nth-child(even) {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
-    margin-right: 20px;
+    margin: 10px;
     text-align: center;
 }
 .dashboard-box > span, .dashboard-box > input {
     display:block;
     margin-top:20px;
     font-size:larger;
+}
+.dashboard-box input {
+    width:100px;
+    text-align:center;
 }
 #wallet_filter {
     margin-left:20px;
@@ -61,4 +70,43 @@ tr:nth-child(even) {
 }
 th .download-button {
     float:right;
+}
+.btn_dappflow {
+    cursor:pointer;
+    float:right;
+}
+#dataTable {
+    width: 100%;
+}
+@media screen and (max-width: 600px) {
+    body {
+        padding: 0;
+    }
+    td, th {
+        padding: 0;
+        font-size: 8px;
+    }
+    table {
+        max-width: 100vw;
+    }
+    .dashboard-box {
+        width: 30vw;
+    }
+    .dashboard-box > span {
+        margin-top:10px;
+    }
+    #wallet_filter {
+        margin-left:0px;
+        font-size:smaller;
+    }
+    th .download-button {
+        float:none;
+        font-size: 0.5rem;
+    }
+    .btn_dappflow {
+        float:none;
+    }
+    #rewardPoolInfo {
+        font-size: 0.7rem;
+    }
 }

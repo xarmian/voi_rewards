@@ -197,7 +197,7 @@ function loadData() {
 
                 // Format first column
                 const td1 = document.createElement('td');
-                td1.textContent = row.proposer;
+                td1.innerHTML = `<span class='proposer'>${row.proposer.substring(0,4)}...${row.proposer.substring(row.proposer.length-4)}</span> <i class="fas fa-external-link-alt btn_dappflow" title="View on Dappflow"></i>`;
                 td1.setAttribute('addr', row.proposer);
                 td1.setAttribute('title', row.proposer);
                 allAddresses.push(row.proposer);
@@ -233,7 +233,7 @@ function loadData() {
             });
 
             // attach click event to column 1 of table to swap between title and textContent
-            document.querySelectorAll('#dataTable tbody td:first-child').forEach(td => {
+            document.querySelectorAll('#dataTable tbody td:first-child span.proposer').forEach(td => {
               let isDragging = false;
               td.addEventListener('mousedown', () => {
                 isDragging = false;
@@ -244,10 +244,18 @@ function loadData() {
               td.addEventListener('mouseup', () => {
                 if (!isDragging) {
                   const text = td.textContent;
-                  const title = td.getAttribute('title');
+                  const title = td.parentElement.getAttribute('title');
                   td.textContent = title;
-                  td.setAttribute('title', text);
+                  td.parentElement.setAttribute('title', text);
                 }
+              });
+            });
+
+            // Attach click event to all elements with the btn_dappflow class
+            document.querySelectorAll('.btn_dappflow').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const addr = btn.parentElement.getAttribute('addr');
+                window.open(`https://app.dappflow.org/explorer/account/${addr}`, '_blank');
               });
             });
 
@@ -256,7 +264,7 @@ function loadData() {
                 const tablerows = tableBody.querySelectorAll('tr');
             
                 tablerows.forEach((row, index) => {
-                    const firstCell = row.querySelector('td:first-child');
+                    const firstCell = row.querySelector('td:first-child span.proposer');
                     const correspondingNFD = aggregatedNFDs.find(nfd => nfd.key === allAddresses[index]);
                     if (correspondingNFD) {
                         firstCell.textContent = correspondingNFD.replacementValue;

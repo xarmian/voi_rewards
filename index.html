@@ -41,27 +41,28 @@
     </div>
     <div id="data_notice">NOTICE: Data is incomplete for the selected date range.</div>
     <br>
-    <div style="text-align:center;display:flex;justify-content: center;">
+    <div class="dashboard-container">
         <div class="dashboard-box" id="totalBlocks">Total blocks <span>Loading...</span></div>
         <div class="dashboard-box" id="lastBlock">Last Block: <span>Loading...</span></div>
         <div class="dashboard-box" id="totalWallets">Total Wallets: <span>Loading...</span></div>
         <div class="dashboard-box" id="totalHealthyNodes">Total Healthy Nodes: <span>Loading...</span></div>
-        <div class="dashboard-box">
+        <div class="dashboard-box" id="rewardPoolInfo">
             <div id="blockVoiPool">Block Reward Pool: <div><input id='blockVoiPoolTotal'></div></div>
             <br/>
             <div id="healthVoiPool">Health Reward Pool: <div><input id='healthVoiPoolTotal'></div></div>
         </div>
     </div>
     <br/><br/>
-    <div>
-        This is a theortical list of potential Voi Testnet Token rewards for node operators.
-	This is the expected payout for each wallet address, based on the current block rewards 
-	proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>
-    </div>
-    <br>
-    <div>
-        Please note that rewards are not currently active. The purpose of this page is to provide information
-        relevant to Node runners and Testnet Governance Council members to visualize the proposed reward structure.
+    <div class="notices">
+        <div>
+            This is a theortical list of potential Voi Testnet Token rewards for node operators.
+        This is the expected payout for each wallet address, based on the current block rewards 
+        proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>
+        </div>
+        <br>
+        <div>
+            Please note that rewards are not official until they are distributed.
+        </div>
     </div>
     <br/>
     <table id="dataTable" border="1">
@@ -71,17 +72,17 @@
                 <th class="sortable">Total Blocks<i class="fa"></i></th>
                 <th class="sortable">Block Rewards<i class="fa fa-sort-down"></i>
                     <button onclick="downloadCSV('block',event)" class="download-button" title="Download CSV with Block rewards only">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-download fa-xs"></i>
                     </button>            
                 </th>
                 <th class="sortable">Health Rewards<i class="fa"></i>
                     <button onclick="downloadCSV('health',event)" class="download-button" title="Download CSV Health rewards only">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-download fa-xs"></i>
                     </button>            
                 </th>
                 <th class="sortable">Total Rewards<i class="fa"></i>
                     <button onclick="downloadCSV('all',event)" class="download-button" title="Download CSV of Total Rewards">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-download fa-xs"></i>
                     </button>            
                 </th>
             </tr>

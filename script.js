@@ -11,14 +11,16 @@ document.addEventListener('DOMContentLoaded', function () {
 const filterInput = document.createElement('input');
 filterInput.id = 'wallet_filter';
 filterInput.type = 'text';
-filterInput.placeholder = 'Filter by wallet...';
+filterInput.placeholder = 'Filter by wallet or address...';
 filterInput.addEventListener('input', () => {
   const filterValue = filterInput.value.toLowerCase();
   const rows = document.querySelectorAll('#dataTable tbody tr');
 
   rows.forEach(row => {
     const wallet = row.querySelector('td:first-child').textContent.toLowerCase();
-    if (wallet.includes(filterValue)) {
+    const addr = row.querySelector('td:first-child').getAttribute('addr')?.toLowerCase();
+    console.log(addr);
+    if (wallet.includes(filterValue) || addr?.includes(filterValue)) {
       row.style.display = '';
     } else {
       row.style.display = 'none';

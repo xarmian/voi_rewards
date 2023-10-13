@@ -24,6 +24,26 @@
           color: white;
           font-size: 24px;
         }
+        .quote {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-left: 5px solid #007BFF;
+            background-color: #f2f2f2;
+        }
+
+        blockquote {
+            margin: 0;
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        cite {
+            display: block;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: right;
+        }
       </style>
       <link rel="stylesheet" href="styles.css?2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -57,11 +77,19 @@
         <div>
             This is a theortical list of potential Voi Testnet Token rewards for node operators.
         This is the expected payout for each wallet address, based on the current block rewards 
-        proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>
+        proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>.
+        <span style='font-weight:bold;'>Please note that rewards are not official until they are distributed.</span>
         </div>
-        <br>
+        <br/>
         <div>
-            Please note that rewards are not official until they are distributed.
+            <span style='font-weight:bold;'>PLEASE BE AWARE that VOI TestNet tokens have no inherent value. The VOI TestNet is a game. Chris said it best:</span>
+            <div class="quote">
+                <blockquote>
+                    "After testnet is over the game will also be over and the points will be tallied. A new entity that follows proper roles and regulations will decide the rewards of the game. There is a chance they might decide zero, but I believe that would be against their best interest and against the mission of Voi."
+                </blockquote>
+                <cite>- Chris Swenor</cite>
+            </div>
+            
         </div>
     </div>
     <br/>
@@ -89,7 +117,7 @@
         </thead>
         <tbody></tbody>
     </table>
-    <script src="script.js?7"></script>
+    <script src="script.js?8"></script>
   </body>
 </html>
 

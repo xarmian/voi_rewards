@@ -33,10 +33,10 @@ filterInput.addEventListener('click', event => {
 document.querySelector('#wallet_column').appendChild(filterInput);
 
 const calcRewards = () => {
-  const block_rewards = Number(document.querySelector('#blockVoiPoolTotal').value.replace(/,/g, ''));
-  const health_rewards = Number(document.querySelector('#healthVoiPoolTotal').value.replace(/,/g, ''));
-  const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(/,/g, '')); 
-
+  const block_rewards = Number(document.querySelector('#blockVoiPoolTotal').value.replace(/[,\.]/g, ''));
+  const health_rewards = Number(document.querySelector('#healthVoiPoolTotal').value.replace(/[,\.]/g, ''));
+  const totalBlocks = Number(document.querySelector('#totalBlocks span').textContent.replace(/[,\.]/g, ''));
+  
   const hn = document.querySelector('#totalHealthyNodes span');
   const totalHealthyNodes = Number(hn.textContent.replace(',', '')) - Number(hn.getAttribute('empty_nodes'));
  

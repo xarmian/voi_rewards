@@ -1,123 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Theoretical Voi Rewards Calculator</title>
-    <style>
-        /* Style for the loading overlay */
-        .overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-        }
-        
-        /* Style for the loading text */
-        .loading-text {
-          color: white;
-          font-size: 24px;
-        }
-        .quote {
-            margin: 1rem 0;
-            padding: 1rem;
-            border-left: 5px solid #007BFF;
-            background-color: #f2f2f2;
-        }
-
-        blockquote {
-            margin: 0;
-            font-size: 1.2rem;
-            font-style: italic;
-        }
-
-        cite {
-            display: block;
-            margin-top: 1rem;
-            font-size: 1rem;
-            font-weight: bold;
-            text-align: right;
-        }
-      </style>
-      <link rel="stylesheet" href="styles.css?2">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
-    <div class="overlay">
-        <div class="loading-text">Loading...</div>
-    </div>
-    <div style="text-align:center;">
-        <label for="datePicker">Select date range:</label>
-        <select id="datePicker" onchange="loadData()"></select>
-        <button onclick="loadData()" class="refresh-button" title="Refresh">
-            <i class="fas fa-sync-alt"></i>
-        </button>
-    </div>
-    <div id="data_notice">NOTICE: Data is incomplete for the selected date range.</div>
-    <br>
-    <div class="dashboard-container">
-        <div class="dashboard-box" id="totalBlocks">Total blocks <span>Loading...</span></div>
-        <div class="dashboard-box" id="lastBlock">Last Block: <span>Loading...</span></div>
-        <div class="dashboard-box" id="totalWallets">Total Wallets: <span>Loading...</span></div>
-        <div class="dashboard-box" id="totalHealthyNodes">Total Healthy Nodes: <span>Loading...</span></div>
-        <div class="dashboard-box" id="rewardPoolInfo">
-            <div id="blockVoiPool">Block Reward Pool: <div><input id='blockVoiPoolTotal'></div></div>
-            <br/>
-            <div id="healthVoiPool">Health Reward Pool: <div><input id='healthVoiPoolTotal'></div></div>
-        </div>
-    </div>
-    <br/><br/>
-    <div class="notices">
-        <div>
-            This is a theortical list of potential Voi Testnet Token rewards for node operators.
-        This is the expected payout for each wallet address, based on the current block rewards 
-        proposal located <a href='https://docs.google.com/document/d/1tgU9Ytd4YxHGOsnFBIuEV75sclpI92AeYPxVZcBxvE0/edit#heading=h.s8s7iwa3qzls'>here</a>.
-        <span style='font-weight:bold;'>Please note that rewards are not official until they are distributed.</span>
-        </div>
-        <br/>
-        <div>
-            <span style='font-weight:bold;'>PLEASE BE AWARE that VOI TestNet tokens have no inherent value. The VOI TestNet is a game. Chris said it best:</span>
-            <div class="quote">
-                <blockquote>
-                    "After testnet is over the game will also be over and the points will be tallied. A new entity that follows proper roles and regulations will decide the rewards of the game. There is a chance they might decide zero, but I believe that would be against their best interest and against the mission of Voi."
-                </blockquote>
-                <cite>- Chris Swenor</cite>
-            </div>
-            
-        </div>
-    </div>
-    <br/>
-    <table id="dataTable" border="1">
-        <thead>
-            <tr>
-                <th id="wallet_column" class="sortable">Wallet<i class="fa"></i></th>
-                <th class="sortable">Total Blocks<i class="fa"></i></th>
-                <th class="sortable">Block Rewards<i class="fa fa-sort-down"></i>
-                    <button onclick="downloadCSV('block',event)" class="download-button" title="Download CSV with Block rewards only">
-                        <i class="fas fa-download fa-xs"></i>
-                    </button>            
-                </th>
-                <th class="sortable">Health Rewards<i class="fa"></i>
-                    <button onclick="downloadCSV('health',event)" class="download-button" title="Download CSV Health rewards only">
-                        <i class="fas fa-download fa-xs"></i>
-                    </button>            
-                </th>
-                <th class="sortable">Total Rewards<i class="fa"></i>
-                    <button onclick="downloadCSV('all',event)" class="download-button" title="Download CSV of Total Rewards">
-                        <i class="fas fa-download fa-xs"></i>
-                    </button>            
-                </th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <script src="script.js?9"></script>
-  </body>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Redirecting to Voi Rewards Auditor</title>
+        <meta http-equiv="refresh" content="5;url=https://voirewards.com">
+        <style>
+            #countdown {
+                font-size: 10rem;
+                text-align: center;
+                margin-top: 5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Redirecting to the Shiny New Voi Rewards Auditor website in five seconds...</h1>
+        <p>If you don't want to wait, you can click <a href="https://voirewards.com">here</a> to go to the new site immediately.</p>
+        <p id="countdown">5</p>
+        <script>
+            let count = 5;
+            const countdownElement = document.querySelector('#countdown');
+            const countdownInterval = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                if (count === 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+        </script>
+    </body>
 </html>
-
